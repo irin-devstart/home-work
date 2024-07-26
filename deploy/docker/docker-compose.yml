@@ -1,0 +1,14 @@
+version: "3.1"
+services:
+  homework-db:
+    container_name: homework-db
+    image: postgres:11.3
+    environment:
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_USER: irin-devstart
+      POSTGRES_DB: homework
+      TZ: Asia/Jakarta
+    ports:
+      - "5432:5432"
+    volumes:
+      - ../db/seeds:/docker-entrypoint-initdb.d

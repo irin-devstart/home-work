@@ -1,0 +1,65 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "strict": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "baseUrl": ".",
+    "sourceMap": true,
+    "paths": {
+      "@common/*": [
+        "src/common/*",
+        "src/common/*.ts",
+        "src/common/*.d.ts",
+        "src/common/index"
+      ],
+      "@pages/*": [
+        "src/pages/*",
+        "src/pages/*.ts",
+        "src/pages/*.tsx",
+        "src/pages/index"
+      ],
+      "@validations/*": [
+        "src/validations/*",
+        "src/validations/*.ts",
+        "src/validations/index"
+      ],
+      "@components/*": [
+        "src/components/*",
+        "src/components/*.tsx",
+        "src/components/*.ts",
+        "src/components/index"
+      ],
+      "@contexts/*": [
+        "src/contexts/*",
+        "src/contexts/*.tsx",
+        "src/contexts/index"
+      ],
+      "@hooks": ["src/hooks/*", "src/hooks/*.ts", "src/hooks/index"],
+      "@service/*": [
+        "src/services/*",
+        "src/services/*.ts",
+        "src/services/index"
+      ]
+    }
+  },
+  /* Linting */
+
+  "noUnusedLocals": true,
+  "noUnusedParameters": true,
+  "noFallthroughCasesInSwitch": true,
+
+  "include": ["src"],
+  "exclude": ["node_modules"],
+  "references": [{ "path": "./tsconfig.node.json" }]
+}

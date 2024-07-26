@@ -1,0 +1,9 @@
+export const PRIMARY = '#012169';
+export const WARNING = '#F9F871';
+export const ERROR = '#F4745D';
+export const SECONDARY = '#FFF';
+export const SUSCESS = '#00C894';
+export const INFO = '#0071B6';
+export const BACKGROUND = '#F5F5F5';
+export const GREY = '#979797';
+export const WHITE = '#FAFAFA';
