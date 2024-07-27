@@ -8,6 +8,7 @@
   "plugins": ["@typescript-eslint"],
   "parser": "@typescript-eslint/parser",
   "parserOptions": { "ecmaVersion": 2018, "sourceType": "module" },
+  "ignorePatterns": ["build", ".eslintrc.json", "src/database/prisma/**/*"],
   "rules": {
     "quotes": ["error", "single"],
     "semi": "error",
