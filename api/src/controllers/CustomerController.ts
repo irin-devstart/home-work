@@ -3,17 +3,17 @@
 import { NextFunction, Request, Response } from 'express';
 import { Controller, ClassMiddleware, ClassErrorMiddleware, Get, Put, Post, Delete } from '@overnightjs/core';
 import { StatusCodes } from 'http-status-codes';
-import { ProductService } from '../services';
+import { CustomerService } from '../services';
 
-@Controller('api/product')
+@Controller('api/customer')
 // @ClassMiddleware(Authentication.AUTHENTICATED)
 // @ClassErrorMiddleware(globalErrorHandler)
-export class ProductController {
+export class CustomerController {
   @Get('')
   private async getAll(req: Request, res: Response, next: NextFunction) {
     try {
-      const order = await ProductService.getAllProducts(req.query);
-      return res.status(StatusCodes.OK).json(order);
+      const customer = await CustomerService.getAllCustomers(req.query);
+      return res.status(StatusCodes.OK).json(customer);
     } catch (error) {
       console.log(error);
       return next(error);
@@ -24,8 +24,8 @@ export class ProductController {
   private async getOne(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
-      const order = await ProductService.getOneProduct(+id);
-      return res.status(StatusCodes.OK).json(order);
+      const customer = await CustomerService.getOneCustomer(+id);
+      return res.status(StatusCodes.OK).json(customer);
     } catch (error) {
       console.log(error);
       return next(error);
@@ -35,8 +35,8 @@ export class ProductController {
   @Post('')
   private async create(req: Request, res: Response, next: NextFunction) {
     try {
-      const order = await ProductService.createProduct(req.body);
-      return res.status(StatusCodes.OK).json(order);
+      const customer = await CustomerService.createCustomer(req.body);
+      return res.status(StatusCodes.OK).json(customer);
     } catch (error) {
       console.log(error);
       return next(error);
@@ -47,8 +47,8 @@ export class ProductController {
   private async update(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
-      const order = await ProductService.editProduct(+id, req.body);
-      return res.status(StatusCodes.OK).json(order);
+      const customer = await CustomerService.editCustomer(+id, req.body);
+      return res.status(StatusCodes.OK).json(customer);
     } catch (error) {
       console.log(error);
       return next(error);
@@ -59,7 +59,7 @@ export class ProductController {
   private async delete(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
-      await ProductService.deleteProduct(+id);
+      await CustomerService.deleteCustomer(+id);
       return res.sendStatus(StatusCodes.NO_CONTENT);
     } catch (error) {
       console.log(error);

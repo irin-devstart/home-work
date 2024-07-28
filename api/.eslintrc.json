@@ -1,10 +1,6 @@
 {
   "root": true,
-  "extends": [
-    "plugin:@typescript-eslint/recommended",
-    "prettier",
-    "plugin:prettier/recommended"
-  ],
+  "extends": ["plugin:@typescript-eslint/recommended", "prettier", "plugin:prettier/recommended"],
   "plugins": ["@typescript-eslint"],
   "parser": "@typescript-eslint/parser",
   "parserOptions": { "ecmaVersion": 2018, "sourceType": "module" },
@@ -13,15 +9,16 @@
     "quotes": ["error", "single"],
     "semi": "error",
     "@typescript-eslint/no-explicit-any": "error",
-    "@typescript-eslint/no-unused-vars": [
-      "warn",
-      { "argsIgnorePattern": "^_" }
-    ],
+    "@typescript-eslint/explicit-function-return-type": "warn",
+    "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
     "prettier/prettier": [
       "error",
       {
+        "printWidth": 150,
         "endOfLine": "auto"
       }
-    ]
+    ],
+    "padding-line-between-statements": ["error", { "blankLine": "always", "prev": "block", "next": "*" }],
+    "no-multiple-empty-lines": ["error", { "max": 1, "maxEOF": 0, "maxBOF": 0 }]
   }
 }

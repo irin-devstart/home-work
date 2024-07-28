@@ -5,15 +5,14 @@ import prisma from '../prisma/client';
 
 const userData: Prisma.UserCreateInput = {
   name: 'admin',
-  email: 'admin@email.com',
+  email: 'admin@gmail.com',
   role: 'ADMIN',
   password: '123456',
   isActive: true
 };
 
-async function main() {
-  console.log(`Start seeding ...`);
-
+async function main(): Promise<void> {
+  console.log('Start seeding ...');
   const password = await argon2.hash(userData.password);
   const data = {
     ...userData,
@@ -24,7 +23,7 @@ async function main() {
   console.log(`Created user with id: ${user.id}`);
 }
 
-console.log(`Seeding finished.`);
+console.log('Seeding finished.');
 
 main()
   .catch((e) => {

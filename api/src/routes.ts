@@ -1,7 +1,6 @@
 import { Server } from '@overnightjs/core';
 import bodyParser from 'body-parser';
 import cors from 'cors';
-
 import * as controllers from './controllers';
 
 class RouterServer extends Server {

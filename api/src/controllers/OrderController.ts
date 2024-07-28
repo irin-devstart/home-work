@@ -3,16 +3,16 @@
 import { NextFunction, Request, Response } from 'express';
 import { Controller, ClassMiddleware, ClassErrorMiddleware, Get, Put, Post, Delete } from '@overnightjs/core';
 import { StatusCodes } from 'http-status-codes';
-import { ProductService } from '../services';
+import { OrderService } from '../services';
 
-@Controller('api/product')
+@Controller('api/order')
 // @ClassMiddleware(Authentication.AUTHENTICATED)
 // @ClassErrorMiddleware(globalErrorHandler)
-export class ProductController {
+export class OrderController {
   @Get('')
   private async getAll(req: Request, res: Response, next: NextFunction) {
     try {
-      const order = await ProductService.getAllProducts(req.query);
+      const order = await OrderService.getAllOrders(req.query);
       return res.status(StatusCodes.OK).json(order);
     } catch (error) {
       console.log(error);
@@ -24,7 +24,7 @@ export class ProductController {
   private async getOne(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
-      const order = await ProductService.getOneProduct(+id);
+      const order = await OrderService.getOneOrder(+id);
       return res.status(StatusCodes.OK).json(order);
     } catch (error) {
       console.log(error);
@@ -35,7 +35,7 @@ export class ProductController {
   @Post('')
   private async create(req: Request, res: Response, next: NextFunction) {
     try {
-      const order = await ProductService.createProduct(req.body);
+      const order = await OrderService.createOrder(req.body);
       return res.status(StatusCodes.OK).json(order);
     } catch (error) {
       console.log(error);
@@ -47,7 +47,7 @@ export class ProductController {
   private async update(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
-      const order = await ProductService.editProduct(+id, req.body);
+      const order = await OrderService.editOrder(+id, req.body);
       return res.status(StatusCodes.OK).json(order);
     } catch (error) {
       console.log(error);
@@ -59,7 +59,7 @@ export class ProductController {
   private async delete(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
-      await ProductService.deleteProduct(+id);
+      await OrderService.deleteOrder(+id);
       return res.sendStatus(StatusCodes.NO_CONTENT);
     } catch (error) {
       console.log(error);
