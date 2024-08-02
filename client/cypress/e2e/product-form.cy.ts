@@ -1,5 +1,5 @@
 describe('Product Create', () => {
-  it('should log in and create an order', () => {
+  it('should log in and create an product', () => {
     cy.visit('http://localhost:3000');
     cy.get('input[name=email]').type('admin@gmail.com');
     cy.get('input[name=password]').type('123456');
