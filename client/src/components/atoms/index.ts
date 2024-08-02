@@ -1,2 +1,3 @@
 import Link from './Link';
-export { Link };
+import StyledDrawer from './StyledDrawer';
+export { Link, StyledDrawer };

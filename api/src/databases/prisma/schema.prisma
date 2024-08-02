@@ -14,10 +14,15 @@ datasource db {
   url      = env("PRISMA_DATABASE_URL")
 }
 
-enum Role {
+enum UserRole {
   ADMIN
   MANAGER
-  VIEWER
+}
+
+enum OrderStatus {
+  PENDING
+  SHIPPED
+  DELIVERY
 }
 
 model User {
@@ -25,8 +30,8 @@ model User {
   name      String?  @db.VarChar(255)
   email     String?  @db.VarChar(255)
   password  String?  @db.VarChar(255)
-  role      Role     @default(ADMIN)
-  isActive  Boolean  @default(false)
+  role      UserRole @default(ADMIN)
+  isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   isDeleted Boolean  @default(false)
@@ -48,7 +53,8 @@ model Customer {
 
 model Product {
   id        Int         @id @default(autoincrement())
-  name      String?     @db.VarChar(255)
+  code      String      @db.VarChar(255)
+  name      String      @db.VarChar(255)
   price     Float
   stock     Int
   createdAt DateTime    @default(now())
@@ -58,37 +64,32 @@ model Product {
 }
 
 model Order {
-  id            Int         @id @default(autoincrement())
-  name          String?     @db.VarChar(255)
-  customer      Customer?   @relation(fields: [customerId], references: [id])
-  customerId    Int?
-  orderDate     DateTime?
-  totalPrice    Int
-  totalDiscount Int
-  totalItem     Int
-  user          User?       @relation(fields: [createdBy], references: [id])
-  createdBy     Int?
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  isDeleted     Boolean     @default(false)
-  OrderItem     OrderItem[]
+  id         Int         @id @default(autoincrement())
+  customer   Customer?   @relation(fields: [customerId], references: [id])
+  customerId Int?
+  orderDate  DateTime?
+  totalPrice Int
+  user       User?       @relation(fields: [createdBy], references: [id])
+  status     OrderStatus @default(PENDING)
+  createdBy  Int?
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  isDeleted  Boolean     @default(false)
+  OrderItem  OrderItem[]
 }
 
 model OrderItem {
-  id            Int       @id @default(autoincrement())
-  qty           Int
-  price         Int
-  discount      Int
-  totalPrice    Int
-  subTotalPrice Int
-  totalDiscount Int
-  order         Order?    @relation(fields: [orderId], references: [id])
-  orderId       Int?
-  product       Product?  @relation(fields: [productId], references: [id])
-  productId     Int?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  isDeleted     Boolean   @default(false)
-  Customer      Customer? @relation(fields: [customerId], references: [id])
-  customerId    Int?
+  id         Int       @id @default(autoincrement())
+  qty        Int
+  price      Int
+  totalPrice Int
+  order      Order?    @relation(fields: [orderId], references: [id])
+  orderId    Int?
+  product    Product?  @relation(fields: [productId], references: [id])
+  productId  Int?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  isDeleted  Boolean   @default(false)
+  Customer   Customer? @relation(fields: [customerId], references: [id])
+  customerId Int?
 }

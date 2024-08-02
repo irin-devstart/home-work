@@ -6,8 +6,9 @@ export const getAll = async (params: ProductQueryParams): Promise<{ count: numbe
   const where: Prisma.ProductWhereInput = {
     isDeleted: false
   };
-  const skip = params?.offset ?? undefined;
-  const take = params?.limit ?? undefined;
+  const skip = +params?.offset ?? undefined;
+  const take = +params?.limit ?? undefined;
+
   const countPromise = prisma.product.count({ where });
   const rowsPromise = prisma.product.findMany({
     skip,

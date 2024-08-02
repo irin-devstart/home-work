@@ -1,9 +1,5 @@
-enum orderStatus {
-  SENT = 'TERKIRIM',
-  PROCESS = 'PROSES',
-  CANCEL = 'CANCEL',
-  RETURN = 'RETURN',
-  REJECT = 'DITOLAK'
-}
-
-export default orderStatus;
+export const orderStatus: Record<OrderStatus, OrderStatus> = {
+  PENDING: 'PENDING',
+  SHIPPED: 'SHIPPED',
+  DELIVERY: 'DELIVERY'
+} as const;

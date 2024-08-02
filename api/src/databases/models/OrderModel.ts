@@ -4,14 +4,18 @@ import { OrderQueryParams } from 'src/typings/FormatParams';
 
 export const getAll = async (params: OrderQueryParams): Promise<{ count: number; rows: Order[] }> => {
   const where: Prisma.OrderWhereInput = { isDeleted: false };
-  const skip = params?.offset ?? undefined;
-  const take = params?.limit ?? undefined;
+  const skip = +params?.offset ?? undefined;
+  const take = +params?.limit ?? undefined;
   const countPromise = prisma.order.count({ where });
   const rowsPromise = prisma.order.findMany({
     skip,
     take,
     orderBy: [{ id: 'desc' }],
-    where
+    where,
+    include: {
+      customer: true,
+      OrderItem: true
+    }
   });
   const [count, rows] = await Promise.all([countPromise, rowsPromise]);
   return { count, rows };
@@ -19,7 +23,15 @@ export const getAll = async (params: OrderQueryParams): Promise<{ count: number;
 
 export const getOne = (id: number): Promise<Order> => {
   return prisma.order.findUnique({
-    where: { id }
+    where: { id },
+    include: {
+      customer: true,
+      OrderItem: {
+        include: {
+          product: true
+        }
+      }
+    }
   });
 };
 

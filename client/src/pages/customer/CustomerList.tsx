@@ -1,23 +1,80 @@
-import { WebRoute } from '@common/constants';
-import { Table } from '@components/organisms';
+import { queryKeys, webRoute } from '@common/constants';
+import { gotoRouterById, truncateString } from '@common/utils';
+import {
+  AlertDialog,
+  OptionsPopup,
+  OptionsPopupProps,
+  Table
+} from '@components/organisms';
 import { TTableColumn } from '@components/organisms/Table';
 import { ContentTemplate, MainTemplate } from '@components/templates';
-import { usePagination } from '@hooks';
-import { Add, MoreVert } from '@mui/icons-material';
+import { useAlertDialog, useOptionsPopup, usePagination } from '@hooks';
+import { Add, DeleteRounded, EditRounded, MoreVert } from '@mui/icons-material';
 import { Button, IconButton, TextField, Typography } from '@mui/material';
+import {
+  deleteCustomerService,
+  getPaginatedCustomersService
+} from '@service/CustomerService';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const CustomerList = () => {
   const navigate = useNavigate();
+  const alertModal = useAlertDialog();
+  const queryClient = useQueryClient();
   const { setCount, resetPage, onPageCustomChange, ...pagination } =
     usePagination();
+  const { id, handleClose, handleOpen, ...optionsPopupProps } =
+    useOptionsPopup();
+
+  const getCustomerList = useQuery({
+    queryKey: [queryKeys.customer],
+    queryFn: () => {
+      return getPaginatedCustomersService(
+        pagination.page,
+        pagination.rowsPerPage
+      );
+    }
+  });
+
+  const deleteCustomer = useMutation({
+    mutationFn: deleteCustomerService,
+    onSuccess: () => {
+      alertModal.setData({
+        open: true,
+        type: 'success',
+        title: 'Successful!',
+        description: 'Successfully Deleted Customer',
+        actionProps: {
+          onClose: () => {
+            alertModal.setClose();
+            queryClient.invalidateQueries({
+              queryKey: [queryKeys.customer]
+            });
+          }
+        }
+      });
+    },
+    onError: (data: { message: string }) => {
+      alertModal.setData({
+        open: true,
+        type: 'error',
+        title: 'Failed',
+        description: data.message,
+        actionProps: {
+          onClose: alertModal.setClose
+        }
+      });
+    }
+  });
 
   const columns: Array<TTableColumn<Customer>> = [
     {
       id: 'name',
-      label: 'Nama',
+      label: 'Name',
       setFilterContent: () => {
-        return <TextField placeholder='Pencarian Nama' />;
+        return <TextField placeholder='Search name...' />;
       },
       setContent: (data) => {
         return <Typography>{data.name}</Typography>;
@@ -26,9 +83,19 @@ const CustomerList = () => {
 
     {
       id: 'phone',
-      label: 'No Hp',
+      label: 'Phone Number',
       setFilterContent: () => {
-        return <TextField placeholder='Pencarian No Hp' />;
+        return <TextField placeholder='Search phone number...' />;
+      },
+      setContent: (data) => {
+        return <Typography>{data.phone}</Typography>;
+      }
+    },
+    {
+      id: 'email',
+      label: 'Email Address',
+      setFilterContent: () => {
+        return <TextField placeholder='Search email address...' />;
       },
       setContent: (data) => {
         return <Typography>{data.phone}</Typography>;
@@ -36,170 +103,98 @@ const CustomerList = () => {
     },
     {
       id: 'address',
-      label: 'Alamat',
-      setFilterContent: () => {
-        return <TextField placeholder='Pencarian Alamat' />;
-      },
+      label: 'Address',
       setContent: (data) => {
-        return <Typography>{data.address}</Typography>;
+        return (
+          <Typography>{truncateString(data.address ?? '', 20)}</Typography>
+        );
       }
     },
     {
       id: 'id',
-      label: 'Aksi',
+      label: 'Action',
       align: 'right',
-      setContent: () => {
+      setContent: (data) => {
         return (
-          <IconButton sx={{ mr: '-.55em' }}>
+          <IconButton
+            sx={{ mr: '-.55em' }}
+            onClick={(event) => handleOpen(event, data.id)}
+          >
             <MoreVert />
           </IconButton>
         );
       }
     }
   ];
+
+  const optionsList: OptionsPopupProps['options'] = [
+    {
+      key: 'edit',
+      label: 'Edit Customer',
+      icon: <EditRounded fontSize='small' />,
+      onClick: () => navigate(gotoRouterById(webRoute.customer.edit, id))
+    },
+    {
+      key: 'delete',
+      label: 'Delete Customer',
+      icon: <DeleteRounded fontSize='small' />,
+      onClick() {
+        alertModal.setData({
+          open: true,
+          type: 'confirm',
+          title: 'Confirmation!',
+          description: 'Are you sure you want to delete?',
+          actionProps: {
+            onCancel: alertModal.setClose,
+            isLoading: deleteCustomer.isPending,
+            onSubmit: () => {
+              deleteCustomer.mutate(id);
+            }
+          }
+        });
+      }
+    }
+  ];
+
+  useEffect(() => {
+    setCount(getCustomerList.data?.count ?? 0);
+  }, [getCustomerList.data]);
+
   return (
-    <MainTemplate title='Pelanggan' subTitle='Home'>
+    <MainTemplate title='Customer Page' subTitle='Show all customers'>
       <ContentTemplate
-        title='Data Pelanggan'
-        subTitle='Dari tanggal 01 Januari 2014 - 02 januari 2024'
+        title='Data Customer'
         action={
           <Button
             startIcon={<Add />}
-            onClick={() => navigate(WebRoute.customer.create)}
+            onClick={() => navigate(webRoute.customer.create)}
           >
-            Tambah Pelanggan
+            Add New Customer
           </Button>
         }
       >
         <Table
           pagination={pagination}
           resource={{
-            isLoading: false,
-            isFetching: false,
-            data: [
-              {
-                id: 0,
-                name: 'Martin Tangkilisan',
-                phone: '087871745038',
-                address: 'BANTEN'
-              },
-              {
-                id: 0,
-                name: 'Lilis santoso',
-                phone: '081325925 957',
-                address: 'SOLO'
-              },
-              {
-                id: 0,
-                name: 'joristin',
-                phone: '085299912112',
-                address: 'KENDARI'
-              },
-              {
-                id: 0,
-                name: 'Hj iis ',
-                phone: '085779922228',
-                address: 'BOGOR'
-              },
-              {
-                id: 0,
-                name: 'Irta Sarita',
-                phone: '082168283744',
-                address: 'KARO'
-              },
-              {
-                id: 0,
-                name: 'Desak Putu Suhartini',
-                phone: '081347217795',
-                address: 'SUKMAJAYA'
-              },
-              {
-                id: 0,
-                name: 'Arutila',
-                phone: '08112406043',
-                address: 'INDRAMAYU'
-              },
-              {
-                id: 0,
-                name: 'Maya',
-                phone: '087781947776',
-                address: 'BANDUNG'
-              },
-              {
-                id: 0,
-                name: 'ugiarti',
-                phone: '082133436062',
-                address: 'DOMPU'
-              },
-              {
-                id: 0,
-                name: 'Sumira',
-                phone: '082186418910',
-                address: 'BANYUASIN'
-              },
-              {
-                id: 0,
-                name: 'Agustina',
-                phone: '0813 6325 1850',
-                address: 'PARIAMAN'
-              },
-              {
-                id: 0,
-                name: 'evlin sinatra',
-                phone: '0811791598',
-                address: 'BANDAR LAMPUNG'
-              },
-              {
-                id: 0,
-                name: 'wati',
-                phone: '082215655559',
-                address: 'SUBANG'
-              },
-              {
-                id: 0,
-                name: 'ibu marni',
-                phone: '081919604805',
-                address: 'LOMBOK'
-              },
-              {
-                id: 0,
-                name: 'Suartini',
-                phone: '082337022973',
-                address: 'GIANYAR'
-              },
-              {
-                id: 0,
-                name: 'Sudarmadji ',
-                phone: '081227788708',
-                address: 'PROBOLINGGO'
-              },
-              {
-                id: 0,
-                name: 'm’ba Anis ',
-                phone: '081779140308',
-                address: 'BANDUNG'
-              },
-              {
-                id: 0,
-                name: 'Murni',
-                phone: '083803034666',
-                address: 'BELITUNG'
-              },
-              {
-                id: 0,
-                name: 'Deshendrawati ',
-                phone: '0852 6599 5662 ',
-                address: 'PEKANBARU'
-              },
-              {
-                id: 0,
-                name: 'Rahayu Nirmala',
-                phone: '087880550967',
-                address: 'DENPASAR UTARA'
-              }
-            ]
+            isLoading: getCustomerList.isLoading,
+            isFetching: getCustomerList.isFetching,
+            data: getCustomerList.data?.rows ?? []
           }}
           columns={columns}
+        />
+        <AlertDialog {...alertModal.alertDialog} />
+        <OptionsPopup
+          {...optionsPopupProps}
+          options={optionsList}
+          onClose={handleClose}
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'center'
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'right'
+          }}
         />
       </ContentTemplate>
     </MainTemplate>

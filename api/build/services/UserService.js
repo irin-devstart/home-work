@@ -1,7 +1,11 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteUser = exports.createUser = exports.editUser = exports.getOneUser = exports.getAllUsers = void 0;
 const models_1 = require("../databases/models");
+const argon2_1 = __importDefault(require("argon2"));
 const getAllUsers = async (params) => {
     const user = await models_1.UserModel.getAll(params);
     return user;
@@ -18,7 +22,11 @@ const editUser = async (id, data) => {
 };
 exports.editUser = editUser;
 const createUser = async (data) => {
-    const user = await models_1.UserModel.create(data);
+    const dataFinal = {
+        ...data,
+        password: await argon2_1.default.hash(data.password)
+    };
+    const user = await models_1.UserModel.create(dataFinal);
     return user;
 };
 exports.createUser = createUser;

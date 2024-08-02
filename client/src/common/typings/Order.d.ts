@@ -1,22 +1,21 @@
 interface Order {
   id: number;
-  orderId: string;
+  customerId: number;
+  orderDate: Date;
+  totalPrice: number;
   customer: Customer;
-  interaction: OrderInteraction;
+  OrderItem: Array<OrderItem>;
   status: OrderStatus;
-  customerService: Pick<User, 'id' | 'name'>;
-  date: Date;
-  currency: idr;
-  paymentMethod: PaymentMethod;
-  receipt: string;
-  cashBack: number;
-  product: Array<OrderProduct>;
-  turnover: number;
-  shipping: number;
-  grossProfit: number;
-  CODTax: number;
-  ppnCODTax: number;
-  WHTTax: number;
-  returnShippingCosts?: number;
-  netProfit: number;
+  createdBy: number;
+  createdAt: Date;
+  updatedAt: Date;
 }
+
+interface OrderForm
+  extends Pick<Order, 'customerId' | 'orderDate' | 'totalPrice'> {
+  orderItem: OrderItemForm;
+  customerName: string;
+  orderItemsFinal: Array<OrderItemForm & { id: number }>;
+}
+
+interface OrderUpdateStatus extends Pick<Order, 'id' | 'status'> {}

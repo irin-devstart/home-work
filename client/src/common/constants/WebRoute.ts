@@ -1,4 +1,4 @@
-const WebRoute = {
+export const webRoute = {
   home: {
     index: '/'
   },
@@ -8,20 +8,24 @@ const WebRoute = {
     forget: '/forget'
   },
   product: {
-    index: '/produk',
-    create: '/produk/create'
+    index: '/product',
+    create: '/product/create',
+    edit: '/product/:id'
   },
   customer: {
     index: '/customer',
-    create: '/customer/create'
+    create: '/customer/create',
+    edit: '/customer/:id'
   },
+
   order: {
-    index: '/penjualan',
-    create: '/penjualan/create'
+    index: '/order',
+    create: '/order/create',
+    edit: '/order/:id',
+    detail: '/order/detail/:id'
   },
   setting: {
-    index: '/pengaturan'
+    index: '/setting',
+    user: '/setting/customer'
   }
-};
-
-export default WebRoute;
+} as const;

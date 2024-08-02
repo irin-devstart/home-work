@@ -43,6 +43,18 @@ export class OrderController {
     }
   }
 
+  @Put('status/:id')
+  private async status(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+      const order = await OrderService.editOrderStatus(+id, req.body);
+      return res.status(StatusCodes.OK).json(order);
+    } catch (error) {
+      console.log(error);
+      return next(error);
+    }
+  }
+
   @Put(':id')
   private async update(req: Request, res: Response, next: NextFunction) {
     try {

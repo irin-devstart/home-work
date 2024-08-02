@@ -45,6 +45,17 @@ let OrderController = class OrderController {
             return next(error);
         }
     }
+    async status(req, res, next) {
+        try {
+            const { id } = req.params;
+            const order = await services_1.OrderService.editOrderStatus(+id, req.body);
+            return res.status(http_status_codes_1.StatusCodes.OK).json(order);
+        }
+        catch (error) {
+            console.log(error);
+            return next(error);
+        }
+    }
     async update(req, res, next) {
         try {
             const { id } = req.params;
@@ -87,6 +98,12 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object, Function]),
     __metadata("design:returntype", Promise)
 ], OrderController.prototype, "create", null);
+__decorate([
+    (0, core_1.Put)('status/:id'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object, Function]),
+    __metadata("design:returntype", Promise)
+], OrderController.prototype, "status", null);
 __decorate([
     (0, core_1.Put)(':id'),
     __metadata("design:type", Function),

@@ -1,3 +1,4 @@
 import OrderList from './OrderList';
 import OrderForm from './OrderForm';
-export { OrderList, OrderForm };
+import OrderDetail from './OrderDetail';
+export { OrderList, OrderForm, OrderDetail };

@@ -1,7 +1,14 @@
-import { Box, Stack, TextField } from '@mui/material';
+import { Box, InputAdornment, Stack, TextField } from '@mui/material';
 import React from 'react';
+import { UseFormReturn } from 'react-hook-form';
 
-const CustomerForm = () => {
+interface CustomerFormProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  state: UseFormReturn<CustomerForm, any, undefined>;
+}
+
+const CustomerForm = ({ state }: CustomerFormProps) => {
+  const { errors } = state.formState;
   return (
     <Box
       sx={{
@@ -11,16 +18,49 @@ const CustomerForm = () => {
     >
       <Stack gap={2}>
         <Stack flex={1} direction='column' gap={2}>
-          <TextField label='Nama' fullWidth />
+          <TextField
+            {...state.register('name')}
+            label='Name'
+            fullWidth
+            required
+            error={!!errors.name}
+            helperText={errors.name?.message}
+            InputLabelProps={{ shrink: true }}
+          />
 
           <Stack columnGap={1} alignItems='center'>
-            <TextField label='No. Hp' fullWidth />
-            <TextField label='Email' fullWidth />
+            <TextField
+              {...state.register('phone')}
+              label='Phone Number'
+              InputProps={{
+                inputProps: {
+                  format: '########'
+                },
+                startAdornment: (
+                  <InputAdornment position='start'>+62</InputAdornment>
+                )
+              }}
+              fullWidth
+              required
+              error={!!errors.phone}
+              helperText={errors.phone?.message}
+              InputLabelProps={{ shrink: true }}
+            />
+            <TextField
+              {...state.register('email')}
+              label='Email Address'
+              fullWidth
+              required
+              error={!!errors.email}
+              helperText={errors.email?.message}
+              InputLabelProps={{ shrink: true }}
+            />
           </Stack>
         </Stack>
         <Stack flex={1} direction='column' gap={2}>
           <TextField
-            label='Alamat'
+            {...state.register('address')}
+            label='Address'
             fullWidth
             minRows={3}
             multiline
@@ -29,6 +69,7 @@ const CustomerForm = () => {
                 height: '5.8em'
               }
             }}
+            InputLabelProps={{ shrink: true }}
           />
         </Stack>
       </Stack>

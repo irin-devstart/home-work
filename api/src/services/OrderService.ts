@@ -12,13 +12,30 @@ export const getOneOrder = async (id: number): Promise<Order> => {
   return order;
 };
 
-export const editOrder = async (id: number, data: Prisma.OrderUncheckedUpdateInput): Promise<Order> => {
+export const editOrder = async (id: number, data: Prisma.OrderUncheckedUpdateInput & { OrderItem: Prisma.OrderItemCreateInput }): Promise<Order> => {
+  const dataFinal: Prisma.OrderUncheckedUpdateInput = {
+    ...data,
+    OrderItem: { createMany: { data: data.OrderItem } }
+  };
+
+  const order = await OrderModel.edit(id, dataFinal);
+  return order;
+};
+
+export const editOrderStatus = async (
+  id: number,
+  data: Prisma.OrderUncheckedUpdateInput & { OrderItem: Prisma.OrderItemCreateInput }
+): Promise<Order> => {
   const order = await OrderModel.edit(id, data);
   return order;
 };
 
-export const createOrder = async (data: Prisma.OrderCreateInput): Promise<Order> => {
-  const order = await OrderModel.create(data);
+export const createOrder = async (data: Prisma.OrderCreateInput & { OrderItem: Prisma.OrderItemCreateInput }): Promise<Order> => {
+  const dataFinal: Prisma.OrderCreateInput = {
+    ...data,
+    OrderItem: { createMany: { data: data.OrderItem } }
+  };
+  const order = await OrderModel.create(dataFinal);
   return order;
 };
 

@@ -1,4 +1,4 @@
-import { WebRoute } from '@common/constants';
+import { webRoute } from '@common/constants';
 import {
   HomeRounded,
   InventoryRounded,
@@ -7,33 +7,31 @@ import {
   ShoppingCartRounded
 } from '@mui/icons-material';
 
-const menuList = [
+export const menuList = [
   {
-    label: 'Beranda',
-    link: WebRoute.home.index,
+    label: 'Dashboard',
+    link: webRoute.home.index,
     icon: <HomeRounded color='secondary' fontSize='small' />
   },
   {
-    label: 'Produk',
-    link: WebRoute.product.index,
+    label: 'Product',
+    link: webRoute.product.index,
     icon: <InventoryRounded color='secondary' fontSize='small' />
   },
   {
-    label: 'Pelanggan',
-    link: WebRoute.customer.index,
+    label: 'Customer',
+    link: webRoute.customer.index,
     icon: <PeopleRounded color='secondary' fontSize='small' />
   },
   {
-    label: 'Penjualan',
-    link: WebRoute.order.index,
+    label: 'Order',
+    link: webRoute.order.index,
     icon: <ShoppingCartRounded color='secondary' fontSize='small' />
   },
 
   {
-    label: 'Pengaturan',
-    link: WebRoute.setting.index,
+    label: 'Setting',
+    link: webRoute.setting.user,
     icon: <SettingsRounded color='secondary' fontSize='small' />
   }
 ];
-
-export default menuList;

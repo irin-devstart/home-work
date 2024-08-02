@@ -1,10 +1,11 @@
 interface Product {
   id: number;
+  code: string;
   name: string;
-  imageUrl: string;
-  price: Array<{
-    currency: string;
-    country: string;
-    price: number;
-  }>;
+  price: number;
+  stock: number;
+  createdAt: Date;
+  updatedAt: Date;
 }
+
+interface ProductForm extends Omit<Product, 'id' | 'createdAt' | 'updatedAt'> {}

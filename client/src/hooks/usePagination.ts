@@ -17,7 +17,7 @@ interface TOption {
 const usePagination = (options?: Partial<TOption>): TReturnPagination => {
   const [page, setPage] = useState<number>(options?.defaultPage ?? 0);
   const [rowsPerPage, setRowsPerPage] = useState<number>(
-    options?.defaultRowsPerPage ?? 0
+    options?.defaultRowsPerPage ?? 10
   );
   const [count, setCount] = useState<number>(0);
 

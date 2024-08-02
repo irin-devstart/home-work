@@ -1,53 +1,77 @@
 import { createBrowserRouter } from 'react-router-dom';
 import * as Layouts from './components';
-import { WebRoute } from './common';
+import { webRoute } from './common';
 import * as Pages from './pages';
+import * as Settings from './pages/setting';
+import RequireAuth from '@components/layouts/RequireAuth';
 
 const router = createBrowserRouter([
   {
     element: <Layouts.AuthLayout />,
     children: [
       {
-        path: WebRoute.auth.login,
+        path: webRoute.auth.login,
         element: <Pages.Login />
       }
     ]
   },
   {
-    element: <Layouts.RootLayout />,
-    path: WebRoute.home.index,
+    element: <RequireAuth page={<Layouts.RootLayout />} />,
+    path: webRoute.home.index,
     children: [
       {
         index: true,
         element: <Pages.Dashboard />
       },
       {
-        path: WebRoute.customer.index,
+        path: webRoute.customer.index,
         element: <Pages.CustomerList />
       },
       {
-        path: WebRoute.customer.create,
+        path: webRoute.customer.create,
         element: <Pages.CustomerForm />
       },
       {
-        path: WebRoute.product.index,
+        path: webRoute.customer.edit,
+        element: <Pages.CustomerForm />
+      },
+      {
+        path: webRoute.product.index,
         element: <Pages.ProductList />
       },
       {
-        path: WebRoute.product.create,
+        path: webRoute.product.create,
         element: <Pages.ProductForm />
       },
       {
-        path: WebRoute.order.index,
+        path: webRoute.product.edit,
+        element: <Pages.ProductForm />
+      },
+      {
+        path: webRoute.order.index,
         element: <Pages.OrderList />
       },
       {
-        path: WebRoute.order.create,
+        path: webRoute.order.create,
         element: <Pages.OrderForm />
       },
       {
-        path: WebRoute.setting.index,
-        element: <Pages.Setting />
+        path: webRoute.order.edit,
+        element: <Pages.OrderForm />
+      },
+      {
+        path: webRoute.order.detail,
+        element: <Pages.OrderDetail />
+      },
+      {
+        path: webRoute.setting.index,
+        element: <Pages.Setting />,
+        children: [
+          {
+            path: webRoute.setting.user,
+            element: <Settings.UserList />
+          }
+        ]
       }
     ]
   }

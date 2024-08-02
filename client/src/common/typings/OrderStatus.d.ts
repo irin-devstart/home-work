@@ -1,1 +1,1 @@
-type OrderStatus = 'TERKIRIM' | 'PROSES' | 'CANCEL' | 'RETURN' | 'DITOLAK';
+type OrderStatus = 'PENDING' | 'SHIPPED' | 'DELIVERY';

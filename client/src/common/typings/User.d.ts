@@ -1,11 +1,13 @@
-type Role = 'CS' | 'ADMIN';
 interface User {
   id: number;
   name: string;
   email: string;
-  phone: string;
-  role: Role;
-  address: string;
+  role: UserRole;
   password: string;
   isActive: boolean;
 }
+
+interface UserForm
+  extends Omit<User, 'createdAt' | 'updatedAt' | 'isActive' | 'password'> {}
+
+interface UserStatus extends Pick<User, 'isActive' | 'id'> {}

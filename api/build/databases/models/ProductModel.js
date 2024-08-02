@@ -10,8 +10,8 @@ const getAll = async (params) => {
     const where = {
         isDeleted: false
     };
-    const skip = (_a = params === null || params === void 0 ? void 0 : params.offset) !== null && _a !== void 0 ? _a : undefined;
-    const take = (_b = params === null || params === void 0 ? void 0 : params.limit) !== null && _b !== void 0 ? _b : undefined;
+    const skip = (_a = +(params === null || params === void 0 ? void 0 : params.offset)) !== null && _a !== void 0 ? _a : undefined;
+    const take = (_b = +(params === null || params === void 0 ? void 0 : params.limit)) !== null && _b !== void 0 ? _b : undefined;
     const countPromise = client_1.default.product.count({ where });
     const rowsPromise = client_1.default.product.findMany({
         skip,

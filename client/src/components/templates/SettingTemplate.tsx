@@ -1,8 +1,12 @@
-import { Paper, Tab, Tabs } from '@mui/material';
+import { Box, Paper, Tab, TabProps, Tabs, TabsProps } from '@mui/material';
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 
-const SettingTemplate = () => {
+export interface TabListProps {}
+interface SettingTemplateProps extends TabsProps {
+  tabLists: Array<TabProps>;
+}
+const SettingTemplate = ({ tabLists, ...props }: SettingTemplateProps) => {
   return (
     <Paper
       elevation={1}
@@ -15,18 +19,23 @@ const SettingTemplate = () => {
       }}
     >
       <Tabs
-        value={'value'}
+        {...props}
         orientation='vertical'
-        onChange={() => alert('fasfa')}
         aria-label='nav tabs example'
         role='navigation'
-        sx={{ borderRight: 1, borderColor: 'divider', width: '11em' }}
+        sx={{ borderRight: 1, borderColor: 'divider', width: '13em' }}
       >
-        <Tab label='Page One' />
-        <Tab label='Page Two' />
-        <Tab label='Page Three' />
+        {tabLists.map((tabList, index) => (
+          <Tab key={index} {...tabList} />
+        ))}
       </Tabs>
-      <Outlet />
+      <Box
+        sx={{
+          pl: '1em'
+        }}
+      >
+        <Outlet />
+      </Box>
     </Paper>
   );
 };

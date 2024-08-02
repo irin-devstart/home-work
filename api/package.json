@@ -6,7 +6,8 @@
     "seed": "ts-node ./src/databases/prisma/seed.ts"
   },
   "scripts": {
-    "watch": "concurrently \"yarn watch-ts\" \"yarn watch-node\"",
+    "start": "node -r dotenv/config build/server.js",
+    "watch": "concurrently -k \"yarn watch-ts\" \"yarn watch-node\"",
     "watch-ts": "tsc -w",
     "build-ts": "tsc",
     "build": "yarn run eslint && npx prisma generate && yarn run build-ts",

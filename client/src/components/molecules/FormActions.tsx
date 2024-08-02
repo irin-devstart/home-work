@@ -1,5 +1,6 @@
 import { Button, Stack } from '@mui/material';
 import React from 'react';
+import ButtonLoading from './ButtonLoading';
 
 interface FormActionsProps {
   isSubmitLoading?: boolean;
@@ -21,7 +22,9 @@ const FormActions = ({
         {cancelLabel}
       </Button>
 
-      <Button onSubmit={onSubmit}>{submitLabel}</Button>
+      <ButtonLoading onClick={onSubmit} isLoading={isSubmitLoading}>
+        {submitLabel}
+      </ButtonLoading>
     </Stack>
   );
 };

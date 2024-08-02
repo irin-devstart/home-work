@@ -2,7 +2,7 @@ import { Box, Toolbar, Container } from '@mui/material';
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import { Header, SideBar } from '@components/organisms';
-import { BACKGROUND } from '@common/constants/Colors';
+import { BACKGROUND } from '@common/constants/colors';
 
 const RootLayout = () => {
   const [open, setOpen] = React.useState(true);

@@ -1,3 +1,4 @@
+import { LocalGroceryStoreRounded } from '@mui/icons-material';
 import { Stack, Typography } from '@mui/material';
 import React from 'react';
 
@@ -10,17 +11,16 @@ const AuthTemplate = ({ logoUrl, title, children }: AuthTemplateProps) => {
   return (
     <Stack
       direction='column'
-      rowGap={1}
+      rowGap={2}
       sx={{
-        p: '2em 1em'
+        p: '3em 1em'
       }}
     >
       <Stack flexGrow={1} justifyContent='center'>
-        <div
-          style={{
-            background: 'blue',
-            width: '100px',
-            height: '100px'
+        <LocalGroceryStoreRounded
+          color='primary'
+          sx={{
+            fontSize: '5em'
           }}
         />
       </Stack>

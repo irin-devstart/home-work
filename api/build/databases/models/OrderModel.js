@@ -8,14 +8,18 @@ const client_1 = __importDefault(require("../prisma/client"));
 const getAll = async (params) => {
     var _a, _b;
     const where = { isDeleted: false };
-    const skip = (_a = params === null || params === void 0 ? void 0 : params.offset) !== null && _a !== void 0 ? _a : undefined;
-    const take = (_b = params === null || params === void 0 ? void 0 : params.limit) !== null && _b !== void 0 ? _b : undefined;
+    const skip = (_a = +(params === null || params === void 0 ? void 0 : params.offset)) !== null && _a !== void 0 ? _a : undefined;
+    const take = (_b = +(params === null || params === void 0 ? void 0 : params.limit)) !== null && _b !== void 0 ? _b : undefined;
     const countPromise = client_1.default.order.count({ where });
     const rowsPromise = client_1.default.order.findMany({
         skip,
         take,
         orderBy: [{ id: 'desc' }],
-        where
+        where,
+        include: {
+            customer: true,
+            OrderItem: true
+        }
     });
     const [count, rows] = await Promise.all([countPromise, rowsPromise]);
     return { count, rows };
@@ -23,7 +27,15 @@ const getAll = async (params) => {
 exports.getAll = getAll;
 const getOne = (id) => {
     return client_1.default.order.findUnique({
-        where: { id }
+        where: { id },
+        include: {
+            customer: true,
+            OrderItem: {
+                include: {
+                    product: true
+                }
+            }
+        }
     });
 };
 exports.getOne = getOne;

@@ -1,9 +1,23 @@
-import { WebRoute } from '@common/constants';
-import { FilterDate, Table } from '@components/organisms';
+import { queryKeys, webRoute } from '@common/constants';
+import { gotoRouterById } from '@common/utils';
+import {
+  AlertDialog,
+  FilterDate,
+  OptionsPopup,
+  OptionsPopupProps,
+  OrderStatus,
+  Table
+} from '@components/organisms';
 import { TTableColumn } from '@components/organisms/Table';
 import { ContentTemplate, MainTemplate } from '@components/templates';
-import { usePagination } from '@hooks';
-import { Add, MoreVert } from '@mui/icons-material';
+import { useAlertDialog, useOptionsPopup, usePagination } from '@hooks';
+import {
+  Add,
+  DeleteRounded,
+  EditRounded,
+  MoreVert,
+  VisibilityRounded
+} from '@mui/icons-material';
 import {
   Button,
   IconButton,
@@ -11,139 +25,128 @@ import {
   TextField,
   Typography
 } from '@mui/material';
-import React from 'react';
+import {
+  deleteOrderService,
+  getPaginatedOrdersService
+} from '@service/OrderService';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { format } from 'date-fns';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const data: Array<Order> = [
-  {
-    id: 0,
-    orderId: '1342568',
-    customer: {
-      id: 0,
-      name: 'Endang Lestari',
-      address: 'KUTAI TIMUR',
-      phone: '087817700001'
-    },
-    cashBack: 2300,
-    CODTax: 3240,
-    currency: 'idr',
-    paymentMethod: 'COD',
-    interaction: 'R',
-    customerService: {
-      id: 9,
-      name: 'ADED'
-    },
-    date: new Date(),
-    grossProfit: 457000,
-    netProfit: 426666,
-    ppnCODTax: 3234,
-
-    turnover: 980000,
-    shipping: 23000,
-    product: [
-      {
-        id: 0,
-        price: 500000,
-        totalPrice: 500000,
-        qty: 1,
-        product: {
-          id: 0,
-          name: 'D-VINE'
-        }
-      }
-    ],
-    receipt: 'JO0208346325',
-    status: 'TERKIRIM',
-    WHTTax: 0,
-    returnShippingCosts: 0
-  }
-];
 const OrderList = () => {
   const navigate = useNavigate();
+  const alertModal = useAlertDialog();
+  const queryClient = useQueryClient();
   const { setCount, resetPage, onPageCustomChange, ...pagination } =
     usePagination();
+  const { id, handleClose, handleOpen, ...optionsPopupProps } =
+    useOptionsPopup();
+
+  const getOrderList = useQuery({
+    queryKey: [queryKeys.order],
+    queryFn: () => {
+      return getPaginatedOrdersService(pagination.page, pagination.rowsPerPage);
+    }
+  });
+
+  const deleteOrder = useMutation({
+    mutationFn: deleteOrderService,
+    onSuccess: () => {
+      alertModal.setData({
+        open: true,
+        type: 'success',
+        title: 'Successful!',
+        description: 'Successfully Deleted Order',
+        actionProps: {
+          onClose: () => {
+            alertModal.setClose();
+            queryClient.invalidateQueries({
+              queryKey: [queryKeys.order]
+            });
+          }
+        }
+      });
+    },
+    onError: (data: { message: string }) => {
+      alertModal.setData({
+        open: true,
+        type: 'error',
+        title: 'Failed',
+        description: data.message,
+        actionProps: {
+          onClose: alertModal.setClose
+        }
+      });
+    }
+  });
 
   const columns: Array<TTableColumn<Order>> = [
     {
-      id: 'orderId',
+      id: 'id',
       label: 'ID Order',
-      width: '15%',
+      width: '14%',
       setFilterContent: () => {
-        return <TextField placeholder='Pencarian Produk' />;
+        return <TextField placeholder='Search id order...' />;
       },
       setContent: (data) => {
-        return <Typography>{data.orderId}</Typography>;
+        return <Typography>{data.id}</Typography>;
       }
     },
     {
       id: 'customer',
-      label: 'Nama Customer',
-      width: '15%',
+      label: 'Customer Name',
+      width: '24%',
       setFilterContent: () => {
-        return <TextField placeholder='Pencarian Produk' />;
+        return <TextField placeholder='Search customer name...' />;
       },
       setContent: (data) => {
-        return <Typography>{data.customer?.name}</Typography>;
+        return <Typography>{data.customer.name}</Typography>;
       }
     },
 
     {
-      id: 'date',
-      label: 'Tanggal',
-      width: '15%',
+      id: 'orderDate',
+      label: 'Order Date',
+      width: '16%',
       setContent: (data) => {
-        return <Typography>4 February 2024</Typography>;
+        return <Typography>{format(data.orderDate, 'dd-MM-yyyy')}</Typography>;
       }
     },
+
     {
-      id: 'interaction',
-      label: 'Interaksi',
-      width: '10%',
-      setFilterContent: () => {
-        return <TextField placeholder='Pencarian Produk' />;
-      },
+      id: 'totalPrice',
+      label: 'Total Price',
+      width: '16%',
+      align: 'right',
       setContent: (data) => {
-        return <Typography>{data.interaction}</Typography>;
+        return <Typography>{data.totalPrice}</Typography>;
       }
     },
     {
       id: 'status',
       label: 'Status',
-      width: '10%',
-      setFilterContent: () => {
-        return <TextField placeholder='Pencarian Produk' />;
-      },
+      width: '20%',
+      align: 'center',
       setContent: (data) => {
-        return <Typography>{data.status}</Typography>;
+        return (
+          <Stack justifyContent='center'>
+            <OrderStatus status={data.status} />
+          </Stack>
+        );
       }
     },
-    {
-      id: 'grossProfit',
-      label: 'Profit Kotor',
-      width: '15%',
-
-      setContent: (data) => {
-        return <Typography>{data.grossProfit}</Typography>;
-      }
-    },
-    {
-      id: 'netProfit',
-      label: 'Profit Bersih',
-      width: '15%',
-
-      setContent: (data) => {
-        return <Typography>{data.netProfit}</Typography>;
-      }
-    },
-
     {
       id: 'id',
-      label: 'Aksi',
-      width: '5%',
+      label: 'Action',
       align: 'right',
-      setContent: () => {
+      width: '10%',
+      setContent: (data) => {
         return (
-          <IconButton sx={{ mr: '-.55em' }}>
+          <IconButton
+            sx={{ mr: '-.55em' }}
+            onClick={(event) => handleOpen(event, data.id)}
+          >
             <MoreVert />
           </IconButton>
         );
@@ -151,90 +154,94 @@ const OrderList = () => {
     }
   ];
 
-  //   const collapseColumns: Array<TTableColumn<>> = [
-  //     {
-  //       id: 'country',
-  //       label: 'Negara',
-  //       setContent: (data) => {
-  //         return <Typography>{data.country}</Typography>;
-  //       }
-  //     },
-  //     {
-  //       id: 'currency',
-  //       label: 'Mata Uang',
-  //       align: 'center',
-  //       setContent: (data) => {
-  //         return <Typography>{data.currency}</Typography>;
-  //       }
-  //     },
-  //     {
-  //       id: 'price',
-  //       label: 'Harga',
-  //       align: 'right',
-  //       setContent: (data) => {
-  //         return <Typography>{data.price}</Typography>;
-  //       }
-  //     }
-  //   ];
+  const optionsList: OptionsPopupProps['options'] = [
+    {
+      key: 'view',
+      label: 'View Order',
+      icon: <VisibilityRounded fontSize='small' />,
+      onClick: () => navigate(gotoRouterById(webRoute.order.detail, id))
+    },
+    {
+      key: 'edit',
+      label: 'Edit Order',
+      icon: <EditRounded fontSize='small' />,
+      onClick: () => navigate(gotoRouterById(webRoute.order.edit, id))
+    },
+    {
+      key: 'delete',
+      label: 'Delete Order',
+      icon: <DeleteRounded fontSize='small' />,
+      onClick() {
+        alertModal.setData({
+          open: true,
+          type: 'confirm',
+          title: 'Confirmation!',
+          description: 'Are you sure you want to delete?',
+          actionProps: {
+            onCancel: alertModal.setClose,
+            isLoading: deleteOrder.isPending,
+            onSubmit: () => {
+              deleteOrder.mutate(id);
+            }
+          }
+        });
+      }
+    }
+  ];
+
+  useEffect(() => {
+    setCount(getOrderList.data?.count ?? 0);
+  }, [getOrderList.data]);
 
   return (
-    <MainTemplate title='Penjualan' subTitle='Home'>
+    <MainTemplate title='Order Page' subTitle='Show all customers'>
       <ContentTemplate
-        title='Data Penjualan'
-        subTitle='Dari tanggal 01 Januari 2014 - 02 januari 2024'
+        title='Data Order'
+        subTitle='Data displayed from August 1, 2024 to August 31, 2024'
         action={
           <Stack columnGap={2}>
             <FilterDate
               columnGap={2}
               startDateProps={{
-                value: '2024-03-21',
-                label: 'Tanggal Mulai'
+                value: '2024-08-01',
+                label: 'Date Start'
               }}
               endDateProps={{
-                value: '2024-10-01',
-                label: 'Tanggal Akhir'
+                value: '2024-08-31',
+                label: 'Date End'
               }}
             />
             <Button
               startIcon={<Add />}
-              onClick={() => navigate(WebRoute.order.create)}
+              onClick={() => navigate(webRoute.order.create)}
             >
-              Tambah Penjualan
+              Add New Order
             </Button>
           </Stack>
         }
       >
         <Table
-          sx={{
-            minWidth: '85vw'
-          }}
           pagination={pagination}
-          //   collapseColumns={{
-          //     colSpan: 3,
-          //     getValue(item) {
-          //       console.log('Item');
-          //     },
-          //     isLoading: false,
-          //     data: [
-          //       { id: 0, jk: 'Irin' },
-          //       { id: 1, jk: 'Irin' }
-          //     ],
-          //     columns: [
-          //       {
-          //         id: 'jk',
-          //         label: 'sf,s,fsf',
-          //         setContent: () => {
-          //           return <>HAsil</>;
-          //         }
-          //       }
-          //     ]
-          //   }}
           resource={{
-            isLoading: false,
-            isFetching: false,
-            data: data
+            isLoading: getOrderList.isLoading,
+            isFetching: getOrderList.isFetching,
+            data: getOrderList.data?.rows ?? []
           }}
           columns={columns}
+        />
+        <AlertDialog {...alertModal.alertDialog} />
+        <OptionsPopup
+          {...optionsPopupProps}
+          options={optionsList}
+          onClose={handleClose}
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'center'
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'right'
+          }}
         />
       </ContentTemplate>
     </MainTemplate>

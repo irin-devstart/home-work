@@ -1,5 +1,5 @@
 import { WHITE } from '@common/constants';
-import { TableFilter, TableHeader } from '@components/molecules';
+import { TableFilter, TableFooter, TableHeader } from '@components/molecules';
 import { KeyboardArrowDownRounded } from '@mui/icons-material';
 import {
   Paper,
@@ -21,7 +21,8 @@ export interface TTableColumn<TData> extends Omit<TableCellProps, 'id'> {
   id: keyof TData;
   label: string | JSX.Element;
   setFilterContent?: () => JSX.Element;
-  setContent: (data: TData) => JSX.Element;
+  setFooterContent?: () => JSX.Element;
+  setContent: (data: TData, index?: number) => JSX.Element;
 }
 
 interface TableProps<TData, TCollapse> extends Omit<MuiTableProps, 'resource'> {
@@ -90,11 +91,11 @@ const Table = <TData extends { id: number }, TCollapse extends { id: number }>(
                           </IconButton>
                         </TableCell>
                       )}
-                      {columns.map((column) => {
+                      {columns.map((column, index) => {
                         const { id, setContent, ...prev } = column;
                         return (
                           <TableCell key={id as string} {...prev}>
-                            {setContent(item)}
+                            {setContent(item, index)}
                           </TableCell>
                         );
                       })}
@@ -127,7 +128,7 @@ const Table = <TData extends { id: number }, TCollapse extends { id: number }>(
                                       return (
                                         <TableRow>
                                           {collapseColumns.columns.map(
-                                            (collapseColumn) => {
+                                            (collapseColumn, index) => {
                                               const {
                                                 id,
                                                 setContent,
@@ -138,7 +139,10 @@ const Table = <TData extends { id: number }, TCollapse extends { id: number }>(
                                                   key={id as string}
                                                   {...prev}
                                                 >
-                                                  {setContent(collapseItem)}
+                                                  {setContent(
+                                                    collapseItem,
+                                                    index
+                                                  )}
                                                 </TableCell>
                                               );
                                             }
@@ -163,8 +167,10 @@ const Table = <TData extends { id: number }, TCollapse extends { id: number }>(
               <>Data Kosong</>
             )}
           </TableBody>
+          <TableFooter columns={columns} useCollapse={!!collapseColumns} />
         </MuiTable>
       </TableContainer>
+
       {pagination && (
         <TablePagination
           rowsPerPageOptions={[10, 15, 25, 50, 100]}

@@ -1,122 +1,121 @@
-import { WebRoute } from '@common/constants';
-import { Table } from '@components/organisms';
+import { queryKeys, webRoute } from '@common/constants';
+import { gotoRouterById } from '@common/utils';
+import {
+  AlertDialog,
+  OptionsPopup,
+  OptionsPopupProps,
+  Table
+} from '@components/organisms';
 import { TTableColumn } from '@components/organisms/Table';
 import { ContentTemplate, MainTemplate } from '@components/templates';
-import { usePagination } from '@hooks';
-import { Add, MoreVert } from '@mui/icons-material';
+import { useAlertDialog, useOptionsPopup, usePagination } from '@hooks';
+import { Add, DeleteRounded, EditRounded, MoreVert } from '@mui/icons-material';
+import { Button, IconButton, TextField, Typography } from '@mui/material';
 import {
-  Button,
-  IconButton,
-  Stack,
-  TextField,
-  Typography
-} from '@mui/material';
-import React, { useState } from 'react';
+  deleteProductService,
+  getPaginatedProductsService
+} from '@service/ProductService';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-const data = [
-  {
-    id: 0,
-    name: 'D-VINE',
-    imageUrl:
-      'https://img.ws.mms.shopee.co.id/ecd45020347d4fffb24376d5f802435f',
-    price: [
-      {
-        id: 0,
-        currency: 'idr',
-        country: 'INDONESIA',
-        price: 2131239
-      },
-      {
-        id: 0,
-        currency: 'myr',
-        country: 'MALAYSIA',
-        price: 2131239
-      },
-      {
-        id: 0,
-        currency: 'sgd',
-        country: 'SINGAPURA',
-        price: 2131239
-      },
-      {
-        id: 0,
-        currency: 'sar',
-        country: 'ARAB SAUDI',
-        price: 2131239
-      }
-    ]
-  },
-  {
-    id: 1,
-    name: 'S-GLOW',
-    imageUrl:
-      'https://img.ws.mms.shopee.co.id/ecd45020347d4fffb24376d5f802435f',
-    price: [
-      {
-        id: 0,
-        currency: 'idr',
-        country: 'INDONESIA',
-        price: 2131239
-      }
-    ]
-  },
-  {
-    id: 2,
-    name: 'E-VITE',
-    imageUrl:
-      'https://img.ws.mms.shopee.co.id/ecd45020347d4fffb24376d5f802435f',
-    price: [
-      {
-        id: 0,
-        currency: 'idr',
-        country: 'INDONESIA',
-        price: 2131239
-      }
-    ]
-  },
-  {
-    id: 3,
-    name: 'M-COLL',
-    imageUrl:
-      'https://img.ws.mms.shopee.co.id/ecd45020347d4fffb24376d5f802435f',
-    price: [
-      {
-        id: 0,
-        currency: 'idr',
-        country: 'INDONESIA',
-        price: 2131239
-      }
-    ]
-  }
-];
+
 const ProductList = () => {
   const navigate = useNavigate();
-  const [productId, setProductId] = useState<number>(0);
+  const alertModal = useAlertDialog();
+  const queryClient = useQueryClient();
   const { setCount, resetPage, onPageCustomChange, ...pagination } =
     usePagination();
+  const { id, handleClose, handleOpen, ...optionsPopupProps } =
+    useOptionsPopup();
+
+  const getProductList = useQuery({
+    queryKey: [queryKeys.product],
+    queryFn: () => {
+      return getPaginatedProductsService(
+        pagination.page,
+        pagination.rowsPerPage
+      );
+    }
+  });
+
+  const deleteProduct = useMutation({
+    mutationFn: deleteProductService,
+    onSuccess: () => {
+      alertModal.setData({
+        open: true,
+        type: 'success',
+        title: 'Successful!',
+        description: 'Successfully Deleted Product',
+        actionProps: {
+          onClose: () => {
+            alertModal.setClose();
+            queryClient.invalidateQueries({
+              queryKey: [queryKeys.product]
+            });
+          }
+        }
+      });
+    },
+    onError: (data: { message: string }) => {
+      alertModal.setData({
+        open: true,
+        type: 'error',
+        title: 'Failed',
+        description: data.message,
+        actionProps: {
+          onClose: alertModal.setClose
+        }
+      });
+    }
+  });
+
   const columns: Array<TTableColumn<Product>> = [
     {
-      id: 'name',
-      label: 'Nama Produk',
+      id: 'code',
+      label: 'Code',
       setFilterContent: () => {
-        return <TextField placeholder='Pencarian Produk' />;
+        return <TextField placeholder='Search code...' />;
       },
       setContent: (data) => {
-        return (
-          <Stack alignItems='center' columnGap={1}>
-            <img src={data.imageUrl} alt='' width={40} height={40} />
-            <Typography fontWeight={600}>{data.name}</Typography>
-          </Stack>
-        );
+        return <Typography>{data.code}</Typography>;
       }
     },
     {
+      id: 'name',
+      label: 'Name',
+      setFilterContent: () => {
+        return <TextField placeholder='Search name...' />;
+      },
+      setContent: (data) => {
+        return <Typography>{data.name}</Typography>;
+      }
+    },
+    {
+      id: 'stock',
+      label: 'Stock',
+      setContent: (data) => {
+        return <Typography>{data.stock}</Typography>;
+      }
+    },
+    {
+      id: 'price',
+      label: 'Price',
+
+      setContent: (data) => {
+        return <Typography>{data.price}</Typography>;
+      }
+    },
+
+    {
       id: 'id',
-      label: 'Aksi',
+      label: 'Action',
       align: 'right',
-      setContent: () => {
+      setContent: (data) => {
         return (
-          <IconButton sx={{ mr: '-.55em' }}>
+          <IconButton
+            sx={{ mr: '-.55em' }}
+            onClick={(event) => handleOpen(event, data.id)}
+          >
             <MoreVert />
           </IconButton>
         );
@@ -124,63 +123,74 @@ const ProductList = () => {
     }
   ];
 
-  const collapseColumns: Array<TTableColumn<Product['price'][number]>> = [
+  const optionsList: OptionsPopupProps['options'] = [
     {
-      id: 'country',
-      label: 'Negara',
-      setContent: (data) => {
-        return <Typography>{data.country}</Typography>;
-      }
+      key: 'edit',
+      label: 'Edit Product',
+      icon: <EditRounded fontSize='small' />,
+      onClick: () => navigate(gotoRouterById(webRoute.product.edit, id))
     },
     {
-      id: 'currency',
-      label: 'Mata Uang',
-      align: 'center',
-      setContent: (data) => {
-        return <Typography>{data.currency}</Typography>;
-      }
-    },
-    {
-      id: 'price',
-      label: 'Harga',
-      align: 'right',
-      setContent: (data) => {
-        return <Typography>{data.price}</Typography>;
+      key: 'delete',
+      label: 'Delete Product',
+      icon: <DeleteRounded fontSize='small' />,
+      onClick() {
+        alertModal.setData({
+          open: true,
+          type: 'confirm',
+          title: 'Confirmation!',
+          description: 'Are you sure you want to delete?',
+          actionProps: {
+            onCancel: alertModal.setClose,
+            isLoading: deleteProduct.isPending,
+            onSubmit: () => {
+              deleteProduct.mutate(id);
+            }
+          }
+        });
       }
     }
   ];
 
+  useEffect(() => {
+    setCount(getProductList.data?.count ?? 0);
+  }, [getProductList.data]);
+
   return (
-    <MainTemplate title='Produk' subTitle='Home'>
+    <MainTemplate title='Product Page' subTitle='Show all products'>
       <ContentTemplate
-        title='Data Produk'
-        subTitle='Dari tanggal 01 Januari 2014 - 02 januari 2024'
+        title='Data Product'
         action={
           <Button
             startIcon={<Add />}
-            onClick={() => navigate(WebRoute.product.create)}
+            onClick={() => navigate(webRoute.product.create)}
           >
-            Tambah Produk
+            Add New Product
           </Button>
         }
       >
         <Table
           pagination={pagination}
-          collapseColumns={{
-            colSpan: 3,
-            getValue(item) {
-              setProductId(item.id);
-            },
-            isLoading: false,
-            data: data.find((dt) => dt.id === productId)?.price ?? [],
-            columns: collapseColumns
-          }}
           resource={{
-            isLoading: false,
-            isFetching: false,
-            data: data
+            isLoading: getProductList.isLoading,
+            isFetching: getProductList.isFetching,
+            data: getProductList.data?.rows ?? []
           }}
           columns={columns}
+        />
+        <AlertDialog {...alertModal.alertDialog} />
+        <OptionsPopup
+          {...optionsPopupProps}
+          options={optionsList}
+          onClose={handleClose}
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'center'
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'right'
+          }}
         />
       </ContentTemplate>
     </MainTemplate>
