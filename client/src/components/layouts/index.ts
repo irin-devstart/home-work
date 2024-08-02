@@ -1,3 +1,4 @@
 import AuthLayout from './AuthLayout';
 import RootLayout from './RootLayout';
-export { AuthLayout, RootLayout };
+import RoleBasedAccess from './RoleBasedAccess';
+export { AuthLayout, RootLayout, RoleBasedAccess };

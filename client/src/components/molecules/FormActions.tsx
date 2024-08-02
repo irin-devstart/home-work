@@ -22,7 +22,7 @@ const FormActions = ({
         {cancelLabel}
       </Button>
 
-      <ButtonLoading onClick={onSubmit} isLoading={isSubmitLoading}>
+      <ButtonLoading id='submit' onClick={onSubmit} isLoading={isSubmitLoading}>
         {submitLabel}
       </ButtonLoading>
     </Stack>

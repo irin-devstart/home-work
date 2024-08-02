@@ -61,7 +61,11 @@ const AlertDialog = ({
               </ButtonLoading>
             </>
           ) : (
-            <Button variant='outlined' onClick={actionProps?.onClose}>
+            <Button
+              variant='outlined'
+              id='close'
+              onClick={actionProps?.onClose}
+            >
               Close
             </Button>
           )}

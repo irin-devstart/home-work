@@ -1,6 +1,8 @@
 import * as z from 'zod';
 
 export const OrderDefaultValues: Partial<OrderForm> = {
+  customerId: 0,
+  customerName: '',
   orderDate: new Date(),
   totalPrice: 0
 };

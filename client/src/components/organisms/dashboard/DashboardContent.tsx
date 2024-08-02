@@ -1,4 +1,11 @@
-import { ERROR, GREY, INFO, orderStatus, SUSCESS } from '@common/constants';
+import {
+  ERROR,
+  GREY,
+  INFO,
+  orderStatus,
+  SUSCESS,
+  userRole
+} from '@common/constants';
 import {
   CardTotal,
   CardTotalProps,
@@ -25,6 +32,8 @@ import {
 } from 'chart.js';
 import { capitalizeFirstLetter } from '@common/utils';
 import { UseQueryResult } from '@tanstack/react-query';
+import { useUser } from '@contexts/UserContenx';
+import { RoleBasedAccess } from '@components/layouts';
 
 ChartJS.register(
   CategoryScale,
@@ -64,6 +73,7 @@ const DashboardContent = ({
   getOrderList,
   getCustomerList
 }: DashboardContentProps) => {
+  const { user } = useUser();
   // TODO: Create Api for get data for order total and chart
   const getTotalPrice = (status: OrderStatus) => {
     const total = (getOrderList.data?.rows ?? [])
@@ -194,22 +204,24 @@ const DashboardContent = ({
         ))}
       </Stack>
 
-      <Paper
-        sx={{
-          p: 2
-        }}
-      >
-        <Stack flexDirection='column' rowGap={2}>
-          <Stack justifyContent='space-between'>
-            <Typography variant='h6'>Order Statistics</Typography>
-            <Stack alignItems='center' columnGap={2}>
-              <ColorInformation label='Total Price' color={INFO} />
+      <RoleBasedAccess allowedRoles={[userRole.MANAGER]} userRole={user.role}>
+        <Paper
+          sx={{
+            p: 2
+          }}
+        >
+          <Stack flexDirection='column' rowGap={2}>
+            <Stack justifyContent='space-between'>
+              <Typography variant='h6'>Order Statistics</Typography>
+              <Stack alignItems='center' columnGap={2}>
+                <ColorInformation label='Total Price' color={INFO} />
+              </Stack>
             </Stack>
+            <Divider />
+            <Bar data={barChartData} options={options} />
           </Stack>
-          <Divider />
-          <Bar data={barChartData} options={options} />
-        </Stack>
-      </Paper>
+        </Paper>
+      </RoleBasedAccess>
 
       <Paper
         sx={{

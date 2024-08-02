@@ -145,3 +145,16 @@ yarn watch
 | databases/prisma | Directory | This subdirectory holds Prisma-related files for database schema and migrations.                                             |
 | service          | Directory | This folder includes service files that handle business logic and interact with models.                                      |
 | typings          | Directory | This directory stores TypeScript type definitions used throughout the application.                                           |
+
+<br />
+<br />
+
+# End-to-end tests
+
+## 1. Commands
+
+Start End-to-end Open
+
+```
+npx cypress open
+```
