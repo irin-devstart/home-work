@@ -158,3 +158,10 @@ Start End-to-end Open
 ```
 npx cypress open
 ```
+
+# User Seeding
+
+## 1. login payload
+
+- email: admin@gmail.com
+- password: 123456
