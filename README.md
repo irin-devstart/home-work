@@ -30,12 +30,12 @@ docker-compose start -d
 
 ## 2. Database Config
 
-DB_HOST=localhost
-DB_PORT=5432
-DB_SCHEMA=homework
-DB_NAME=homework
-DB_USER=irin-devstart
-DB_PW=123456
+- DB_HOST=localhost
+- DB_PORT=5432
+- DB_SCHEMA=homework
+- DB_NAME=homework
+- DB_USER=irin-devstart
+- DB_PW=123456
 
 # Reactjs Client
 
